@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulación de Aves Migratorias</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #000;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+    
+    .controls {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 15px;
+      border-radius: 8px;
+      max-width: 300px;
+      backdrop-filter: blur(10px);
+    }
+    
+    .control-group {
+      margin-bottom: 15px;
+    }
+    
+    .control-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+    
+    .control-group input {
+      width: 60px;
+      padding: 5px;
+      margin-right: 10px;
+      border: 1px solid #555;
+      background: #333;
+      color: white;
+      border-radius: 4px;
+    }
+    
+    .control-group button {
+      padding: 8px 15px;
+      margin-right: 5px;
+      margin-top: 5px;
+      border: none;
+      border-radius: 4px;
+      background: #4CAF50;
+      color: white;
+      cursor: pointer;
+      font-size: 12px;
+      transition: background 0.3s;
+    }
+    
+    .control-group button:hover {
+      background: #45a049;
+    }
+    
+    .control-group button:active {
+      background: #3d8b40;
+    }
+    
+    .info {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 15px;
+      border-radius: 8px;
+      max-width: 250px;
+      backdrop-filter: blur(10px);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    
+    .info h3 {
+      margin: 0 0 10px 0;
+      font-size: 16px;
+      color: #4CAF50;
+    }
+    
+    .info ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+    
+    .info li {
+      margin-bottom: 5px;
+    }
+    
+    .legend {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 10px;
+      border-radius: 8px;
+      backdrop-filter: blur(10px);
+      font-size: 12px;
+    }
+    
+    .legend h4 {
+      margin: 0 0 8px 0;
+      font-size: 14px;
+      color: #4CAF50;
+    }
+    
+    .color-item {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      margin-right: 5px;
+      border-radius: 50%;
+      vertical-align: middle;
+    }
+    
+    .authors {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      backdrop-filter: blur(10px);
+      font-size: 14px;
+      text-align: center;
+      z-index: 10;
+    }
+    
+    .authors h3 {
+      margin: 0;
+      font-size: 16px;
+      color: #4CAF50;
+    }
+    
+    .authors p {
+      margin: 5px 0 0;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="authors">
+    <h3>Autores del Proyecto</h3>
+    <p>Jhon Alex Chuquimamani Sucasaire, Autor 2, Autor 3</p>
+  </div>
+  
+  <div class="controls">
+    <div class="control-group">
+      <label>Escala de la Caja:</label>
+      <input type="number" id="scaleInput" value="1" min="0.1" step="0.1">
+      <button id="applyScale">Aplicar</button>
+    </div>
+    
+    <div class="control-group">
+      <label>Control de Aves:</label>
+      <button id="addBirdBtn">+ Agregar Ave</button>
+      <button id="removeBirdBtn">- Quitar Ave</button>
+    </div>
+    
+    <div class="control-group">
+      <label>Número de Aves:</label>
+      <input type="number" id="birdCountInput" value="8" min="0">
+      <button id="setBirdCount">Establecer</button>
+    </div>
+  </div>
+  
+  <div class="info">
+    <h3>Simulación de Aves Migratorias</h3>
+    <p><strong>Controles:</strong></p>
+    <ul>
+      <li>Clic izquierdo + arrastrar: Rotar cámara</li>
+      <li>Rueda del mouse: Zoom</li>
+      <li>Clic derecho + arrastrar: Mover cámara</li>
+    </ul>
+  </div>
+  
+  <div class="legend">
+    <h4>Características de las Aves:</h4>
+    <div style="font-size: 11px; line-height: 1.4;">
+      <div>✦ <strong>Geometría realista:</strong> Cuerpo, cabeza, alas, cola y pico detallados</div>
+      <div>✦ <strong>Animación de alas:</strong> Aleteo sincronizado durante el vuelo</div>
+      <div>✦ <strong>Colores variados:</strong> 5 combinaciones diferentes de plumaje</div>
+      <div>✦ <strong>Comportamiento grupal:</strong> Se separan y reagrupan automáticamente</div>
+      <div>✦ <strong>Orientación dinámica:</strong> Apuntan hacia la dirección de vuelo</div>
+    </div>
+  </div>
+  
+  <script type="module" src="main.js"></script>
+</body>
+</html>
