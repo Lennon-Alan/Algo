@@ -329,20 +329,28 @@
         }
 
         // Event listeners
-        canvas.addEventListener('click', (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
+        document.addEventListener('DOMContentLoaded', function() {
+            const canvas = document.getElementById('canvas');
             
-            // Agregar nueva flor en la posición del click
-            const hue = 45 + Math.random() * 20;
-            const size = 0.8 + Math.random() * 0.4;
-            flowers.push(new Flower(x, y + 100, size, hue));
+            canvas.addEventListener('click', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                // Agregar nueva flor en la posición del click
+                const hue = 45 + Math.random() * 20;
+                const size = 0.8 + Math.random() * 0.4;
+                flowers.push(new Flower(x, y + 100, size, hue));
+                
+                // Crear burst de partículas
+                for (let i = 0; i < 10; i++) {
+                    particles.push(new Particle(x + (Math.random() - 0.5) * 20, y - 20));
+                }
+            });
             
-            // Crear burst de partículas
-            for (let i = 0; i < 10; i++) {
-                particles.push(new Particle(x + (Math.random() - 0.5) * 20, y - 20));
-            }
+            // Inicializar
+            initFlowers();
+            animate();
         });
 
         // Funciones para los botones
@@ -365,12 +373,6 @@
             const colors = backgroundColors[currentBg];
             document.body.style.background = `linear-gradient(135deg, ${colors[0]} 0%, ${colors[1]} 50%, ${colors[2]} 100%)`;
         }
-
-        // Inicializar cuando se carga la página
-        document.addEventListener('DOMContentLoaded', function() {
-            initFlowers();
-            animate();
-        });
     </script>
 </body>
 </html>
