@@ -2,146 +2,171 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Ramo de Flores Interactivo</title>
     <style>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
         body {
             margin: 0;
             padding: 0;
             background: linear-gradient(135deg, #87CEEB 0%, #98FB98 50%, #F0E68C 100%);
             min-height: 100vh;
             display: flex;
-            justify-content: center;
-            align-items: center;
+            flex-direction: column;
             font-family: 'Georgia', serif;
-            overflow: hidden;
+            overflow-x: hidden;
+            touch-action: manipulation;
         }
         
-        #canvas {
-            border: 3px solid #8B4513;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            cursor: crosshair;
-            transition: transform 0.3s ease;
-        }
-        
-        #canvas:hover {
-            transform: scale(1.01);
+        .header {
+            padding: 10px;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
         }
         
         .info {
-            position: absolute;
-            top: 20px;
-            left: 20px;
             color: #2F4F4F;
-            font-size: 16px;
-            text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
-            background: rgba(255,255,255,0.9);
-            padding: 15px;
+            font-size: clamp(12px, 3vw, 14px);
+            font-weight: bold;
+        }
+        
+        .flower-counter {
+            color: #2F4F4F;
+            font-size: clamp(11px, 2.5vw, 13px);
+            text-align: right;
+        }
+        
+        .main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        
+        #canvas {
+            border: 2px solid #8B4513;
             border-radius: 10px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            cursor: crosshair;
+            margin: 10px auto;
+            touch-action: none;
+            max-width: calc(100vw - 20px);
+            max-height: calc(100vh - 200px);
         }
         
         .flower-selector {
-            position: absolute;
-            top: 20px;
-            right: 20px;
             background: rgba(255,255,255,0.95);
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            min-width: 200px;
+            padding: 10px;
+            margin: 5px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
         }
         
         .flower-selector h3 {
             margin: 0 0 10px 0;
             color: #2F4F4F;
             text-align: center;
-            font-size: 18px;
+            font-size: clamp(14px, 4vw, 16px);
+        }
+        
+        .flower-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 8px;
+            max-width: 100%;
         }
         
         .flower-type {
             display: flex;
+            flex-direction: column;
             align-items: center;
-            gap: 10px;
-            padding: 10px;
+            gap: 5px;
+            padding: 8px;
             border: 2px solid transparent;
             border-radius: 10px;
             cursor: pointer;
             transition: all 0.3s ease;
             background: rgba(255,255,255,0.5);
+            touch-action: manipulation;
+            min-height: 60px;
         }
         
-        .flower-type:hover {
-            background: rgba(255,215,0,0.2);
-            border-color: #FFD700;
-            transform: scale(1.05);
+        .flower-type:active {
+            transform: scale(0.95);
         }
         
         .flower-type.selected {
             background: linear-gradient(135deg, #FFD700, #FFA500);
             border-color: #FF8C00;
-            box-shadow: 0 5px 15px rgba(255,140,0,0.3);
+            box-shadow: 0 3px 10px rgba(255,140,0,0.3);
         }
         
         .flower-preview {
-            width: 30px;
-            height: 30px;
+            width: 25px;
+            height: 25px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
+            font-size: clamp(16px, 5vw, 20px);
         }
         
         .flower-name {
             font-weight: bold;
             color: #2F4F4F;
+            font-size: clamp(10px, 2.5vw, 12px);
+            text-align: center;
         }
         
         .controls {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 10px;
+            padding: 10px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 8px;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
         }
         
         button {
-            padding: 12px 25px;
+            padding: 12px 15px;
             background: linear-gradient(135deg, #FFD700, #FFA500);
             border: 2px solid #FF8C00;
-            border-radius: 25px;
-            font-size: 14px;
+            border-radius: 20px;
+            font-size: clamp(11px, 3vw, 13px);
             font-weight: bold;
             color: #8B4513;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-        
-        button:hover {
-            background: linear-gradient(135deg, #FFA500, #FF8C00);
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            transition: all 0.2s ease;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            touch-action: manipulation;
+            min-height: 44px;
         }
         
         button:active {
-            transform: translateY(-1px);
+            transform: scale(0.95);
+            background: linear-gradient(135deg, #FFA500, #FF8C00);
         }
         
         .growing-indicator {
             position: absolute;
             pointer-events: none;
             color: #32CD32;
-            font-size: 24px;
+            font-size: clamp(20px, 6vw, 24px);
             font-weight: bold;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
             animation: growPulse 0.8s ease-out;
+            z-index: 1000;
         }
         
         @keyframes growPulse {
@@ -159,59 +184,98 @@
             }
         }
         
-        .flower-counter {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            background: rgba(255,255,255,0.9);
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            color: #2F4F4F;
-            font-weight: bold;
+        /* Optimizaciones específicas para móviles */
+        @media (max-width: 768px) {
+            .header {
+                padding: 8px;
+            }
+            
+            #canvas {
+                margin: 5px auto;
+            }
+            
+            .flower-selector {
+                margin: 3px;
+                padding: 8px;
+            }
+            
+            .controls {
+                padding: 8px;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 6px;
+            }
+            
+            button {
+                padding: 10px 12px;
+                font-size: 12px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .flower-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .controls {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Optimizaciones para reducir el lag */
+        .flower-type, button {
+            will-change: transform;
+        }
+        
+        #canvas {
+            image-rendering: optimizeSpeed;
+            image-rendering: -webkit-optimize-contrast;
         }
     </style>
 </head>
 <body>
-    <div class="info">
-        🌺 <strong>Creador de Ramos</strong><br>
-        Selecciona un tipo de flor y haz clic<br>
-        en el lienzo para plantarla
-    </div>
-    
-    <div class="flower-selector">
-        <h3>🌸 Tipos de Flores</h3>
-        <div class="flower-type selected" data-flower="girasol">
-            <div class="flower-preview" style="background: #FFD700;">🌻</div>
-            <span class="flower-name">Girasol</span>
+    <div class="header">
+        <div class="info">
+            🌺 <strong>Creador de Ramos</strong><br>
+            Toca el lienzo para plantar
         </div>
-        <div class="flower-type" data-flower="rosa">
-            <div class="flower-preview" style="background: #FF69B4;">🌹</div>
-            <span class="flower-name">Rosa</span>
-        </div>
-        <div class="flower-type" data-flower="tulipan">
-            <div class="flower-preview" style="background: #FF6347;">🌷</div>
-            <span class="flower-name">Tulipán</span>
-        </div>
-        <div class="flower-type" data-flower="margarita">
-            <div class="flower-preview" style="background: #FFF;">🌼</div>
-            <span class="flower-name">Margarita</span>
-        </div>
-        <div class="flower-type" data-flower="loto">
-            <div class="flower-preview" style="background: #DDA0DD;">🪷</div>
-            <span class="flower-name">Loto</span>
-        </div>
-        <div class="flower-type" data-flower="hibisco">
-            <div class="flower-preview" style="background: #FF4500;">🌺</div>
-            <span class="flower-name">Hibisco</span>
+        <div class="flower-counter">
+            <div>🌸 Flores: <span id="flowerCount">7</span></div>
+            <div>🎨 Tipo: <span id="currentType">Girasol</span></div>
         </div>
     </div>
     
-    <canvas id="canvas" width="800" height="600"></canvas>
-    
-    <div class="flower-counter">
-        <div>🌸 Flores plantadas: <span id="flowerCount">7</span></div>
-        <div>🎨 Tipo actual: <span id="currentType">Girasol</span></div>
+    <div class="main-container">
+        <div class="flower-selector">
+            <h3>🌸 Tipos de Flores</h3>
+            <div class="flower-grid">
+                <div class="flower-type selected" data-flower="girasol">
+                    <div class="flower-preview" style="background: #FFD700;">🌻</div>
+                    <span class="flower-name">Girasol</span>
+                </div>
+                <div class="flower-type" data-flower="rosa">
+                    <div class="flower-preview" style="background: #FF69B4;">🌹</div>
+                    <span class="flower-name">Rosa</span>
+                </div>
+                <div class="flower-type" data-flower="tulipan">
+                    <div class="flower-preview" style="background: #FF6347;">🌷</div>
+                    <span class="flower-name">Tulipán</span>
+                </div>
+                <div class="flower-type" data-flower="margarita">
+                    <div class="flower-preview" style="background: #FFF;">🌼</div>
+                    <span class="flower-name">Margarita</span>
+                </div>
+                <div class="flower-type" data-flower="loto">
+                    <div class="flower-preview" style="background: #DDA0DD;">🪷</div>
+                    <span class="flower-name">Loto</span>
+                </div>
+                <div class="flower-type" data-flower="hibisco">
+                    <div class="flower-preview" style="background: #FF4500;">🌺</div>
+                    <span class="flower-name">Hibisco</span>
+                </div>
+            </div>
+        </div>
+        
+        <canvas id="canvas"></canvas>
     </div>
     
     <div class="controls">
@@ -222,7 +286,7 @@
     </div>
 
     <script>
-        // Variables globales
+        // Variables globales optimizadas para móviles
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
         let animationId;
@@ -239,84 +303,107 @@
             ['#E0FFFF', '#F0FFF0', '#FFFAF0']
         ];
         let currentBg = 0;
+        
+        // Variables de optimización para móviles
+        let isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        let maxParticles = isMobile ? 20 : 50;
+        let animationSpeed = isMobile ? 2 : 1;
+        let particleGenerationRate = isMobile ? 0.02 : 0.05;
 
-        // Configuraciones de tipos de flores
+        // Configurar canvas responsivo
+        function setupCanvas() {
+            const container = document.querySelector('.main-container');
+            const maxWidth = Math.min(800, window.innerWidth - 20);
+            const maxHeight = Math.min(600, window.innerHeight - 200);
+            
+            // Ajustar resolución para móviles
+            const pixelRatio = isMobile ? Math.min(window.devicePixelRatio, 2) : window.devicePixelRatio || 1;
+            
+            canvas.width = maxWidth * pixelRatio;
+            canvas.height = maxHeight * pixelRatio;
+            canvas.style.width = maxWidth + 'px';
+            canvas.style.height = maxHeight + 'px';
+            
+            ctx.scale(pixelRatio, pixelRatio);
+            
+            // Optimizaciones del contexto
+            ctx.imageSmoothingEnabled = !isMobile;
+            if (!isMobile) {
+                ctx.imageSmoothingQuality = 'low';
+            }
+        }
+
+        // Configuraciones de tipos de flores (simplificadas para móviles)
         const flowerConfigs = {
             girasol: {
-                hue: [45, 65],
-                petalCount: [12, 16],
-                petalSize: [20, 30],
-                centerSize: [12, 18],
+                petalCount: isMobile ? [8, 12] : [12, 16],
+                petalSize: [15, 25],
+                centerSize: [8, 14],
                 colors: {
-                    petal: ['#FFD700', '#FFA500', '#FF8C00'],
-                    center: ['#8B4513', '#A0522D', '#CD853F']
+                    petal: ['#FFD700', '#FFA500'],
+                    center: ['#8B4513', '#A0522D']
                 },
                 emoji: '🌻',
                 name: 'Girasol'
             },
             rosa: {
-                hue: [320, 360],
-                petalCount: [8, 12],
-                petalSize: [15, 25],
-                centerSize: [6, 10],
+                petalCount: isMobile ? [6, 8] : [8, 12],
+                petalSize: [12, 20],
+                centerSize: [4, 8],
                 colors: {
-                    petal: ['#FF69B4', '#FF1493', '#DC143C'],
-                    center: ['#FFB6C1', '#FFC0CB', '#F08080']
+                    petal: ['#FF69B4', '#FF1493'],
+                    center: ['#FFB6C1', '#FFC0CB']
                 },
                 emoji: '🌹',
                 name: 'Rosa'
             },
             tulipan: {
-                hue: [0, 30],
                 petalCount: [6, 8],
-                petalSize: [18, 28],
-                centerSize: [4, 8],
+                petalSize: [15, 22],
+                centerSize: [3, 6],
                 colors: {
-                    petal: ['#FF6347', '#FF4500', '#FF0000'],
-                    center: ['#000000', '#2F4F4F', '#696969']
+                    petal: ['#FF6347', '#FF4500'],
+                    center: ['#000000', '#2F4F4F']
                 },
                 emoji: '🌷',
                 name: 'Tulipán'
             },
             margarita: {
-                hue: [0, 0],
-                petalCount: [16, 20],
-                petalSize: [12, 18],
-                centerSize: [8, 12],
+                petalCount: isMobile ? [10, 14] : [16, 20],
+                petalSize: [10, 15],
+                centerSize: [6, 10],
                 colors: {
-                    petal: ['#FFFFFF', '#FFFAF0', '#F5F5F5'],
-                    center: ['#FFD700', '#FFA500', '#FF8C00']
+                    petal: ['#FFFFFF', '#FFFAF0'],
+                    center: ['#FFD700', '#FFA500']
                 },
                 emoji: '🌼',
                 name: 'Margarita'
             },
             loto: {
-                hue: [280, 320],
-                petalCount: [12, 16],
-                petalSize: [16, 24],
-                centerSize: [10, 14],
+                petalCount: isMobile ? [8, 12] : [12, 16],
+                petalSize: [12, 18],
+                centerSize: [8, 12],
                 colors: {
-                    petal: ['#DDA0DD', '#DA70D6', '#BA55D3'],
-                    center: ['#FFD700', '#FFA500', '#FF6347']
+                    petal: ['#DDA0DD', '#DA70D6'],
+                    center: ['#FFD700', '#FFA500']
                 },
                 emoji: '🪷',
                 name: 'Loto'
             },
             hibisco: {
-                hue: [10, 40],
-                petalCount: [5, 7],
-                petalSize: [25, 35],
-                centerSize: [6, 12],
+                petalCount: [5, 6],
+                petalSize: [18, 28],
+                centerSize: [5, 10],
                 colors: {
-                    petal: ['#FF4500', '#FF6347', '#FF7F50'],
-                    center: ['#8B0000', '#B22222', '#DC143C']
+                    petal: ['#FF4500', '#FF6347'],
+                    center: ['#8B0000', '#B22222']
                 },
                 emoji: '🌺',
                 name: 'Hibisco'
             }
         };
 
-        // Clase para representar una flor con animación de crecimiento
+        // Clase Flower optimizada
         class Flower {
             constructor(x, y, type, size = 1) {
                 this.x = x;
@@ -327,20 +414,18 @@
                 this.currentSize = 0;
                 this.targetSize = size;
                 this.growing = true;
-                this.growthSpeed = 0.05;
+                this.growthSpeed = isMobile ? 0.08 : 0.05;
                 
-                // Propiedades específicas del tipo de flor
                 const config = this.config;
-                this.stemHeight = 80 + Math.random() * 60;
+                this.stemHeight = isMobile ? 40 + Math.random() * 40 : 80 + Math.random() * 60;
                 this.petalCount = config.petalCount[0] + Math.floor(Math.random() * (config.petalCount[1] - config.petalCount[0]));
                 this.petalSize = config.petalSize[0] + Math.random() * (config.petalSize[1] - config.petalSize[0]);
                 this.centerSize = config.centerSize[0] + Math.random() * (config.centerSize[1] - config.centerSize[0]);
                 
                 this.rotation = Math.random() * Math.PI * 2;
                 this.bobOffset = Math.random() * Math.PI * 2;
-                this.leafOffset = Math.random() * 40 + 20;
+                this.leafOffset = Math.random() * 20 + 15;
                 
-                // Colores aleatorios del tipo
                 this.petalColor = config.colors.petal[Math.floor(Math.random() * config.colors.petal.length)];
                 this.centerColor = config.colors.center[Math.floor(Math.random() * config.colors.center.length)];
             }
@@ -351,19 +436,23 @@
                     if (this.currentSize >= this.targetSize) {
                         this.currentSize = this.targetSize;
                         this.growing = false;
-                        // Crear partículas cuando termina de crecer
-                        this.createGrowthParticles();
+                        if (!isMobile || Math.random() < 0.5) {
+                            this.createGrowthParticles();
+                        }
                     }
                 }
             }
 
             createGrowthParticles() {
-                for (let i = 0; i < 15; i++) {
-                    particles.push(new Particle(
-                        this.x + (Math.random() - 0.5) * 40, 
-                        this.y - this.stemHeight + (Math.random() - 0.5) * 20,
-                        this.petalColor
-                    ));
+                const particleCount = isMobile ? 5 : 10;
+                for (let i = 0; i < particleCount; i++) {
+                    if (particles.length < maxParticles) {
+                        particles.push(new Particle(
+                            this.x + (Math.random() - 0.5) * 30, 
+                            this.y - this.stemHeight + (Math.random() - 0.5) * 15,
+                            this.petalColor
+                        ));
+                    }
                 }
             }
 
@@ -372,25 +461,23 @@
                 
                 ctx.save();
                 
-                // Efecto de balanceo suave
-                const bob = Math.sin(time * 0.002 + this.bobOffset) * 2;
-                const growthBob = this.growing ? Math.sin(time * 0.1) * 3 : 0;
+                const bob = isMobile ? 0 : Math.sin(time * 0.002 + this.bobOffset) * 1;
+                const growthBob = this.growing && !isMobile ? Math.sin(time * 0.1) * 2 : 0;
                 
-                // Dibujar tallo
                 this.drawStem(bob + growthBob);
+                if (!isMobile || this.currentSize > 0.5) {
+                    this.drawLeaves(bob + growthBob);
+                }
                 
-                // Dibujar hojas
-                this.drawLeaves(bob + growthBob);
-                
-                // Dibujar flor
                 ctx.translate(this.x, this.y - this.stemHeight + bob + growthBob);
-                ctx.rotate(this.rotation + Math.sin(time * 0.001) * 0.1);
+                if (!isMobile) {
+                    ctx.rotate(this.rotation + Math.sin(time * 0.001) * 0.05);
+                } else {
+                    ctx.rotate(this.rotation);
+                }
                 ctx.scale(this.currentSize, this.currentSize);
                 
-                // Pétalos
                 this.drawPetals();
-                
-                // Centro de la flor
                 this.drawCenter();
                 
                 ctx.restore();
@@ -404,17 +491,16 @@
                 ctx.beginPath();
                 ctx.moveTo(this.x, this.y);
                 
-                const controlX = this.x + Math.sin(time * 0.001 + this.bobOffset) * 5;
-                const controlY = this.y - (this.stemHeight * this.currentSize) / 2;
-                ctx.quadraticCurveTo(
-                    controlX, 
-                    controlY, 
-                    this.x, 
-                    this.y - this.stemHeight * this.currentSize + bob
-                );
+                if (isMobile) {
+                    ctx.lineTo(this.x, this.y - this.stemHeight * this.currentSize + bob);
+                } else {
+                    const controlX = this.x + Math.sin(time * 0.001 + this.bobOffset) * 3;
+                    const controlY = this.y - (this.stemHeight * this.currentSize) / 2;
+                    ctx.quadraticCurveTo(controlX, controlY, this.x, this.y - this.stemHeight * this.currentSize + bob);
+                }
                 
                 ctx.strokeStyle = '#228B22';
-                ctx.lineWidth = 4 * Math.min(this.currentSize, 1);
+                ctx.lineWidth = 3 * Math.min(this.currentSize, 1);
                 ctx.lineCap = 'round';
                 ctx.stroke();
                 ctx.restore();
@@ -427,32 +513,26 @@
                 
                 // Hoja izquierda
                 ctx.save();
-                ctx.translate(this.x - 5, this.y - this.leafOffset * this.currentSize + bob * 0.5);
-                ctx.rotate(-0.3);
+                ctx.translate(this.x - 4, this.y - this.leafOffset * this.currentSize + bob * 0.5);
+                ctx.rotate(-0.2);
                 ctx.scale(this.currentSize, this.currentSize);
                 
                 ctx.beginPath();
-                ctx.ellipse(0, 0, 8, 20, 0, 0, Math.PI * 2);
+                ctx.ellipse(0, 0, 6, 15, 0, 0, Math.PI * 2);
                 ctx.fillStyle = '#32CD32';
                 ctx.fill();
-                ctx.strokeStyle = '#228B22';
-                ctx.lineWidth = 1;
-                ctx.stroke();
                 ctx.restore();
 
                 // Hoja derecha
                 ctx.save();
-                ctx.translate(this.x + 5, this.y - (this.leafOffset - 10) * this.currentSize + bob * 0.5);
-                ctx.rotate(0.3);
+                ctx.translate(this.x + 4, this.y - (this.leafOffset - 8) * this.currentSize + bob * 0.5);
+                ctx.rotate(0.2);
                 ctx.scale(this.currentSize, this.currentSize);
                 
                 ctx.beginPath();
-                ctx.ellipse(0, 0, 8, 20, 0, 0, Math.PI * 2);
+                ctx.ellipse(0, 0, 6, 15, 0, 0, Math.PI * 2);
                 ctx.fillStyle = '#32CD32';
                 ctx.fill();
-                ctx.strokeStyle = '#228B22';
-                ctx.lineWidth = 1;
-                ctx.stroke();
                 ctx.restore();
                 
                 ctx.restore();
@@ -465,88 +545,65 @@
                     ctx.save();
                     ctx.rotate(angle);
                     
-                    // Gradiente específico del tipo de flor
-                    const gradient = ctx.createRadialGradient(0, -this.petalSize, 0, 0, -this.petalSize, this.petalSize);
-                    
-                    if (this.type === 'margarita') {
-                        gradient.addColorStop(0, this.petalColor);
-                        gradient.addColorStop(0.7, '#F0F0F0');
-                        gradient.addColorStop(1, '#E0E0E0');
+                    // Gradiente simplificado para móviles
+                    if (isMobile) {
+                        ctx.fillStyle = this.petalColor;
                     } else {
+                        const gradient = ctx.createRadialGradient(0, -this.petalSize, 0, 0, -this.petalSize, this.petalSize);
                         gradient.addColorStop(0, this.petalColor);
-                        gradient.addColorStop(0.7, this.petalColor + '88');
-                        gradient.addColorStop(1, this.petalColor + '66');
+                        gradient.addColorStop(1, this.petalColor + '88');
+                        ctx.fillStyle = gradient;
                     }
                     
-                    // Forma específica según el tipo
                     ctx.beginPath();
                     if (this.type === 'tulipan') {
-                        // Pétalos más puntiagudos para tulipanes
-                        ctx.ellipse(0, -this.petalSize * 0.8, this.petalSize * 0.4, this.petalSize * 1.2, 0, 0, Math.PI * 2);
+                        ctx.ellipse(0, -this.petalSize * 0.8, this.petalSize * 0.35, this.petalSize, 0, 0, Math.PI * 2);
                     } else if (this.type === 'hibisco') {
-                        // Pétalos más anchos para hibisco
-                        ctx.ellipse(0, -this.petalSize * 0.6, this.petalSize * 0.8, this.petalSize, 0, 0, Math.PI * 2);
+                        ctx.ellipse(0, -this.petalSize * 0.6, this.petalSize * 0.7, this.petalSize * 0.9, 0, 0, Math.PI * 2);
                     } else {
-                        // Forma estándar
-                        ctx.ellipse(0, -this.petalSize, this.petalSize * 0.6, this.petalSize, 0, 0, Math.PI * 2);
+                        ctx.ellipse(0, -this.petalSize, this.petalSize * 0.5, this.petalSize * 0.8, 0, 0, Math.PI * 2);
                     }
                     
-                    ctx.fillStyle = gradient;
                     ctx.fill();
-                    
-                    // Contorno
-                    ctx.strokeStyle = this.petalColor;
-                    ctx.lineWidth = 1;
-                    ctx.stroke();
-                    
                     ctx.restore();
                 }
             }
 
             drawCenter() {
-                // Centro específico del tipo
-                const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, this.centerSize);
-                gradient.addColorStop(0, this.centerColor);
-                gradient.addColorStop(0.6, this.centerColor + '88');
-                gradient.addColorStop(1, this.centerColor + '44');
+                if (isMobile) {
+                    ctx.fillStyle = this.centerColor;
+                } else {
+                    const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, this.centerSize);
+                    gradient.addColorStop(0, this.centerColor);
+                    gradient.addColorStop(1, this.centerColor + '88');
+                    ctx.fillStyle = gradient;
+                }
                 
                 ctx.beginPath();
                 ctx.arc(0, 0, this.centerSize, 0, Math.PI * 2);
-                ctx.fillStyle = gradient;
                 ctx.fill();
-                
-                // Detalles del centro según el tipo
-                if (this.type === 'girasol' || this.type === 'margarita') {
-                    ctx.fillStyle = '#4B0000';
-                    for (let i = 0; i < 12; i++) {
-                        const angle = (i / 12) * Math.PI * 2;
-                        const x = Math.cos(angle) * (this.centerSize * 0.6);
-                        const y = Math.sin(angle) * (this.centerSize * 0.6);
-                        ctx.fillRect(x - 0.5, y - 0.5, 1, 1);
-                    }
-                }
             }
         }
 
-        // Clase mejorada para partículas
+        // Clase Particle optimizada
         class Particle {
             constructor(x, y, color = '#FFD700') {
                 this.x = x;
                 this.y = y;
-                this.vx = (Math.random() - 0.5) * 4;
-                this.vy = (Math.random() - 0.5) * 4 - 2;
-                this.life = 60 + Math.random() * 60;
+                this.vx = (Math.random() - 0.5) * 3;
+                this.vy = (Math.random() - 0.5) * 3 - 1;
+                this.life = isMobile ? 30 + Math.random() * 30 : 60 + Math.random() * 60;
                 this.maxLife = this.life;
-                this.size = 2 + Math.random() * 4;
+                this.size = isMobile ? 1 + Math.random() * 2 : 2 + Math.random() * 4;
                 this.color = color;
             }
 
             update() {
                 this.x += this.vx;
                 this.y += this.vy;
-                this.vy += 0.03; // gravedad
-                this.vx *= 0.99; // resistencia del aire
-                this.life--;
+                this.vy += 0.02;
+                this.vx *= 0.98;
+                this.life -= animationSpeed;
             }
 
             draw() {
@@ -555,14 +612,9 @@
                 const alpha = this.life / this.maxLife;
                 ctx.save();
                 ctx.globalAlpha = alpha;
-                
-                const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size);
-                gradient.addColorStop(0, this.color);
-                gradient.addColorStop(1, this.color + '00');
-                
+                ctx.fillStyle = this.color;
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fillStyle = gradient;
                 ctx.fill();
                 ctx.restore();
             }
@@ -576,15 +628,18 @@
         function initFlowers() {
             flowers = [];
             const types = ['girasol', 'rosa', 'tulipan', 'margarita'];
+            const canvasRect = canvas.getBoundingClientRect();
+            const centerX = canvasRect.width / 2;
+            const centerY = canvasRect.height - 50;
             
             const positions = [
-                {x: 400, y: 550, size: 1.2},
-                {x: 350, y: 530, size: 1.0},
-                {x: 450, y: 540, size: 1.1},
-                {x: 320, y: 500, size: 0.9},
-                {x: 480, y: 510, size: 0.95},
-                {x: 380, y: 480, size: 0.85},
-                {x: 420, y: 490, size: 0.9}
+                {x: centerX, y: centerY, size: 1.2},
+                {x: centerX - 50, y: centerY - 20, size: 1.0},
+                {x: centerX + 50, y: centerY - 10, size: 1.1},
+                {x: centerX - 80, y: centerY - 50, size: 0.9},
+                {x: centerX + 80, y: centerY - 40, size: 0.95},
+                {x: centerX - 30, y: centerY - 70, size: 0.85},
+                {x: centerX + 30, y: centerY - 60, size: 0.9}
             ];
             
             positions.forEach((pos, index) => {
@@ -595,15 +650,14 @@
             updateFlowerCounter();
         }
 
-        // Función de animación principal
+        // Función de animación optimizada
         function animate() {
             if (!isAnimating) return;
             
-            // Limpiar canvas con efecto fade
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            // Limpieza más eficiente
+            ctx.clearRect(0, 0, canvas.width / (window.devicePixelRatio || 1), canvas.height / (window.devicePixelRatio || 1));
             
-            time++;
+            time += animationSpeed;
             
             // Actualizar y dibujar flores
             flowers.forEach(flower => {
@@ -611,12 +665,12 @@
                 flower.draw();
             });
             
-            // Generar partículas ambientales ocasionales
-            if (Math.random() < 0.05 && flowers.length > 0) {
+            // Generar menos partículas en móviles
+            if (Math.random() < particleGenerationRate && flowers.length > 0 && particles.length < maxParticles) {
                 const flower = flowers[Math.floor(Math.random() * flowers.length)];
                 if (!flower.growing) {
                     particles.push(new Particle(
-                        flower.x + (Math.random() - 0.5) * 30, 
+                        flower.x + (Math.random() - 0.5) * 20, 
                         flower.y - flower.stemHeight,
                         flower.petalColor
                     ));
@@ -630,7 +684,14 @@
                 return !particle.isDead();
             });
             
-            animationId = requestAnimationFrame(animate);
+            // Throttle animation on mobile
+            if (isMobile) {
+                setTimeout(() => {
+                    animationId = requestAnimationFrame(animate);
+                }, 16); // ~60fps
+            } else {
+                animationId = requestAnimationFrame(animate);
+            }
         }
 
         // Mostrar indicador de crecimiento
@@ -638,13 +699,15 @@
             const indicator = document.createElement('div');
             indicator.className = 'growing-indicator';
             indicator.textContent = flowerConfigs[type].emoji;
-            indicator.style.left = x + 'px';
-            indicator.style.top = y + 'px';
+            indicator.style.left = (x - 15) + 'px';
+            indicator.style.top = (y - 15) + 'px';
             
             document.body.appendChild(indicator);
             
             setTimeout(() => {
-                document.body.removeChild(indicator);
+                if (document.body.contains(indicator)) {
+                    document.body.removeChild(indicator);
+                }
             }, 800);
         }
 
@@ -654,43 +717,69 @@
             document.getElementById('currentType').textContent = flowerConfigs[selectedFlowerType].name;
         }
 
-        // Event listeners
+        // Event listeners optimizados
         document.addEventListener('DOMContentLoaded', function() {
+            setupCanvas();
+            
+            // Manejar resize
+            let resizeTimeout;
+            window.addEventListener('resize', function() {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(() => {
+                    setupCanvas();
+                    initFlowers();
+                }, 250);
+            });
+            
             // Selector de tipos de flores
             document.querySelectorAll('.flower-type').forEach(element => {
-                element.addEventListener('click', function() {
-                    // Remover selección anterior
+                element.addEventListener('click', function(e) {
+                    e.preventDefault();
                     document.querySelectorAll('.flower-type').forEach(el => el.classList.remove('selected'));
-                    
-                    // Seleccionar nuevo tipo
                     this.classList.add('selected');
                     selectedFlowerType = this.dataset.flower;
                     updateFlowerCounter();
                 });
             });
             
-            // Click en canvas para plantar flor
-            canvas.addEventListener('click', (e) => {
+            // Touch/click en canvas optimizado
+            function handleTouch(e) {
+                e.preventDefault();
                 const rect = canvas.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
+                const touch = e.touches ? e.touches[0] : e;
+                const x = (touch.clientX - rect.left) * (canvas.width / rect.width) / (window.devicePixelRatio || 1);
+                const y = (touch.clientY - rect.top) * (canvas.height / rect.height) / (window.devicePixelRatio || 1);
                 
-                // Agregar nueva flor del tipo seleccionado
                 const size = 0.8 + Math.random() * 0.4;
-                const newFlower = new Flower(x, y + 100, selectedFlowerType, size);
+                const stemHeight = isMobile ? 40 : 80;
+                const newFlower = new Flower(x, y + stemHeight, selectedFlowerType, size);
                 flowers.push(newFlower);
                 
                 // Mostrar indicador
-                showGrowingIndicator(e.clientX, e.clientY, selectedFlowerType);
+                showGrowingIndicator(touch.clientX, touch.clientY, selectedFlowerType);
                 
                 // Actualizar contador
                 updateFlowerCounter();
                 
-                // Crear burst de partículas
-                for (let i = 0; i < 8; i++) {
-                    particles.push(new Particle(x + (Math.random() - 0.5) * 20, y - 20, flowerConfigs[selectedFlowerType].colors.petal[0]));
+                // Crear burst de partículas (reducido en móviles)
+                const particleCount = isMobile ? 3 : 6;
+                for (let i = 0; i < particleCount && particles.length < maxParticles; i++) {
+                    particles.push(new Particle(
+                        x + (Math.random() - 0.5) * 15, 
+                        y - 15, 
+                        flowerConfigs[selectedFlowerType].colors.petal[0]
+                    ));
                 }
-            });
+            }
+            
+            // Eventos para touch y mouse
+            canvas.addEventListener('touchstart', handleTouch, { passive: false });
+            canvas.addEventListener('click', handleTouch);
+            
+            // Prevenir scroll en el canvas en móviles
+            canvas.addEventListener('touchmove', function(e) {
+                e.preventDefault();
+            }, { passive: false });
             
             // Inicializar
             initFlowers();
@@ -708,7 +797,11 @@
             if (isAnimating) {
                 animate();
             } else if (animationId) {
-                cancelAnimationFrame(animationId);
+                if (isMobile) {
+                    clearTimeout(animationId);
+                } else {
+                    cancelAnimationFrame(animationId);
+                }
             }
         }
 
@@ -722,6 +815,30 @@
             flowers = [];
             particles = [];
             updateFlowerCounter();
+        }
+        
+        // Optimización adicional: pausar animación cuando la página no está visible
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                if (isAnimating) {
+                    toggleAnimation();
+                    window.wasAnimating = true;
+                }
+            } else if (window.wasAnimating) {
+                toggleAnimation();
+                window.wasAnimating = false;
+            }
+        });
+        
+        // Detección de dispositivos de baja potencia
+        if (isMobile) {
+            // Reducir calidad gráfica adicional si es necesario
+            const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            if (connection && (connection.effectiveType === '2g' || connection.effectiveType === 'slow-2g')) {
+                maxParticles = 10;
+                animationSpeed = 3;
+                particleGenerationRate = 0.01;
+            }
         }
     </script>
 </body>
