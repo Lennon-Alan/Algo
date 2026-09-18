@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Universo de Flores Amarillas</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="space" id="space">
+    <div class="space-scene" id="scene">
+      <div class="layer layer-nebula">
+        <div class="nebula" aria-hidden="true"></div>
+      </div>
+
+      <div class="layer layer-shoots" id="shoots" aria-hidden="true"></div>
+
+      <div class="layer layer-stars" id="stars" aria-hidden="true"></div>
+
+      <div class="layer layer-bouquets">
+        <div class="bouquets" id="bouquets"></div>
+      </div>
+
+      <div class="layer layer-hero">
+        <div class="hero-wrap" id="heroWrap">
+          <div class="hero-glow" aria-hidden="true"></div>
+          <div class="hero-sway" id="heroSway">
+            <div class="hero-inner" id="heroInner">
+              <div class="hero3d" id="hero3d"></div>
+              <span class="hero-label">Ramo Estelar Central &#10024;</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <header class="title-overlay">
+    <h1>Universo de Flores</h1>
+    <p>toca un ramo o arrastra el universo</p>
+  </header>
+
+  <div class="bursts" id="bursts" aria-hidden="true"></div>
+
+  <div class="modal" id="modal" aria-hidden="true">
+    <div class="modal-backdrop" id="modalBackdrop"></div>
+    <div class="modal-card" id="modalCard"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
